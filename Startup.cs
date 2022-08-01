@@ -62,9 +62,9 @@ namespace MyIOTDevice
 
         {
 
-            if (env.IsDevelopment())
+            //if (env.IsDevelopment())
 
-            {
+            //{
 
                 app.UseDeveloperExceptionPage();
 
@@ -72,7 +72,7 @@ namespace MyIOTDevice
 
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "IotProject v1"));
 
-            }
+            //}
 
 
 
