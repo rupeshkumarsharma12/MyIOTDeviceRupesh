@@ -1,1 +1,79 @@
+apiVersion: apps/v1
 
+kind: Deployment
+
+metadata:
+
+  name: rupeshkubernative
+
+  namespace: ruputestkube
+
+  labels:
+
+    app: rupeshkubernative
+
+spec:
+
+  replicas: 1
+
+  selector:
+
+    matchLabels:
+
+      app: rupeshkubernative
+
+  template:
+
+    metadata:
+
+      labels:
+
+        app: rupeshkubernative
+
+    spec:
+
+      containers:
+
+        - name: containerkube
+
+          image: prdctmntc.azurecr.io/containerkube:#{Release.Artifacts.todayartifactkube.BuildId}#
+
+     
+
+          imagePullPolicy: Always
+
+          ports:
+
+            - containerPort: 5000
+
+
+      imagePullSecrets:
+
+        - name: azsecretimage
+
+---
+
+---
+
+apiVersion: v1
+
+kind: Service
+
+metadata:
+
+  name: rupeshkubernative
+
+spec:
+
+  type: LoadBalancer
+
+  ports:
+
+    - name: http
+
+      port: 5000
+
+
+  selector:
+
+    app: rupeshkubernative
