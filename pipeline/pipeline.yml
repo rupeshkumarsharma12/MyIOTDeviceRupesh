@@ -66,4 +66,4 @@ stages:
 
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
-        artifact: 'todayartifactkube'
+        artifact: 'rupeshartifactkube'
