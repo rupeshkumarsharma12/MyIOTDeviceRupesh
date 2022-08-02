@@ -11,6 +11,7 @@ using Microsoft.Azure;
 using Microsoft.Azure.Storage;
 using Azure.Data.Tables;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 namespace MyIOTDevice.Controllers
 {
@@ -20,11 +21,13 @@ namespace MyIOTDevice.Controllers
 public class MYIOTTableStorageController : ControllerBase
 {
     private readonly string connectionString;
+    private readonly IOptions<ProjectConfig> Configuration;
     // New instance of the TableClient class
     TableServiceClient tableServiceClient;
-    public MYIOTTableStorageController(IConfiguration _configuration)
+    public MYIOTTableStorageController(IOptions<ProjectConfig> _configuration)
     {
-        connectionString = _configuration.GetValue<string>("ConnectionStrings:CosmosDBTableAPI");
+        Configuration = _configuration;
+        connectionString = Configuration.Value.StorageConnectionString;
         this.tableServiceClient = new TableServiceClient(connectionString);
     }
     //Use the TableClient.CreateIfNotExistsAsync method on the TableClient to create a new table if it doesn't already exist.

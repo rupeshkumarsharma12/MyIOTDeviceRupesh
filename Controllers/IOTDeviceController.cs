@@ -7,7 +7,7 @@ using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.Options;
 
 namespace MyIOTDevice.Controllers
 {
@@ -16,15 +16,15 @@ namespace MyIOTDevice.Controllers
 public class IOTDeviceController : ControllerBase
 {
     
-    private IConfiguration Configuration;
+    private readonly IOptions<ProjectConfig> Configuration;
     private static RegistryManager registryManager;
     private readonly ILogger<IOTDeviceController> _logger;
 
-    public IOTDeviceController(IConfiguration _configuration, ILogger<IOTDeviceController> logger)
+    public IOTDeviceController(IOptions<ProjectConfig> _configuration, ILogger<IOTDeviceController> logger)
     {
         Configuration = _configuration;
         _logger = logger;
-        registryManager = RegistryManager.CreateFromConnectionString(this.Configuration.GetConnectionString("NxTIoTHubSAP"));
+        registryManager = RegistryManager.CreateFromConnectionString(this.Configuration.Value.NxTIoTHubSAP);
     }
 
     [HttpGet]

@@ -12,23 +12,24 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 
 [ApiController]
 [Route("[controller]")]
 public class DevicetwinController : ControllerBase
 {
-    private IConfiguration Configuration;
     private static RegistryManager registryManager;
     private static DeviceClient Client = null;
     private readonly ILogger<DevicetwinController> _logger;
+    private readonly IOptions<ProjectConfig> Configuration;
 
-    public DevicetwinController(IConfiguration _configuration, ILogger<DevicetwinController> logger)
+    public DevicetwinController(IOptions<ProjectConfig> _configuration, ILogger<DevicetwinController> logger)
     {
         Configuration = _configuration;
         _logger = logger;
-        registryManager = RegistryManager.CreateFromConnectionString(this.Configuration.GetConnectionString("NxTIoTHubSAP"));//shared access policies connection string.
-        Client = DeviceClient.CreateFromConnectionString(this.Configuration.GetConnectionString("DeviceConnectionString"), Microsoft.Azure.Devices.Client.TransportType.Mqtt);
+        registryManager = RegistryManager.CreateFromConnectionString(this.Configuration.Value.NxTIoTHubSAP);//shared access policies connection string.
+        Client = DeviceClient.CreateFromConnectionString(this.Configuration.Value.DeviceConnectionString);
 
     }
 
