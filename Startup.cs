@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using AzureBlobStorage.Helpers;
 
 namespace MyIOTDevice
 
@@ -41,9 +42,10 @@ namespace MyIOTDevice
         {
 
 
-
+           
             services.AddControllers();
-
+            services.AddScoped<IBlobStorage, BlobStorage>();
+            services.Configure<ProjectConfig>(Configuration.GetSection("ConnectionStrings"));
             services.AddSwaggerGen(c =>
 
             {
@@ -51,6 +53,7 @@ namespace MyIOTDevice
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyIOTDevice", Version = "v1" });
 
             });
+
 
         }
 

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Microsoft.Extensions.Options;
 
 [ApiController]
 [Route("[controller]")]
@@ -20,11 +21,13 @@ public class BlobStorageController : ControllerBase
     private readonly IBlobStorage _storage;
     private readonly string _connectionString;
     private readonly string _container;
-    public BlobStorageController(IConfiguration _configuration, IBlobStorage storage)
+    private readonly IOptions<ProjectConfig> _config;
+    public BlobStorageController(IOptions<ProjectConfig> _configuration, IBlobStorage storage)
     {
         _storage = storage;
-        _connectionString = _configuration.GetValue<string>("ConnectionStrings:StorageAccountConnection");
-        _container = _configuration.GetValue<string>("ConnectionStrings:ContainerName");
+        _config = _configuration;
+        _connectionString = _config.Value.StorageConnectionString;
+       // _container = _configuration.GetValue<string>("ConnectionStrings:ContainerName");
     }
     [HttpPost("CreateContainer")]
     public async Task<IActionResult> CreateContainer(string containerName)

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "NL2fEyWiMC+/co00OgW9eltKG0L42xNx3hgt+o7uonHOe4tkxhonABlmOuDv+Zr0ucolw+YvAYurShXkgghk8w==",
+  "dgSpecHash": "zp0o70+cmHyypH0yscBGw4ILw3iO9F3GU42BrLYj0eoZJuRLoZZK5RCiTFue94p4oLCimFTZAmogEFrLMUAVPA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\M1068498\\MyIOTDevice\\MyIOTDevice.csproj",
+  "projectFilePath": "C:\\Users\\M1068498\\Desktop\\MyIOTDeviceRupesh\\MyIOTDevice.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\M1068498\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\M1068498\\.nuget\\packages\\azure.data.tables\\12.6.1\\azure.data.tables.12.6.1.nupkg.sha512",
