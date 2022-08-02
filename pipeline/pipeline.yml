@@ -67,4 +67,3 @@ stages:
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
         artifact: 'todayartifactkube'
-        publishLocation: 'pipeline'
