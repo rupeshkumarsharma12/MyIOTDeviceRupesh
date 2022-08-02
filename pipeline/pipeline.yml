@@ -4,54 +4,68 @@ trigger:
 
     include:
 
-      - main
+      - rupeshkubernetes
 
-pool:
+variables:
 
-  vmImage: 'ubuntu-latest'
+  # Container registry service connection established during pipeline creation
 
-steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '6.0.x'
+  dockerRegistryServiceConnection: 'dockerServiceRupesh'
 
-  
+  imageRepository: 'containerkube'
 
-- task: DotNetCoreCLI@2
+  containerRegistry: 'prdctmntc.azurecr.io'
 
-  inputs:
+  dockeruser: 'prdctmntc'
 
-    command: 'restore'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
 
-    projects: '**/*.csproj'
+  tag: '$(Build.BuildId)'
 
-- task: DotNetCoreCLI@2
+  vmImage: ubuntu-latest
 
-  inputs:
+stages:
 
-    command: 'build'
+- stage: Build
 
-    arguments: '--configuration $(BuildConfiguration)'
+  displayName: Build and push stage
 
-  displayName: 'dotnet build $(BuildConfiguration)'
+  jobs:
 
-- task: DotNetCoreCLI@2
+  - job: Build
 
-  inputs:
+    displayName: Build
 
-    command: publish
+    pool:
 
-    publishWebProjects: True
+      vmImage: $(vmImage)
 
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    steps:
 
-    zipAfterPublish: True
+    
 
-- task: PublishPipelineArtifact@1
+    - task: Docker@2
 
-  inputs:
+      displayName: Build and push an image to container registry
 
-    targetPath: '$(Build.ArtifactStagingDirectory)' 
+      inputs:
 
-    artifactName: 'rupeshartifacts'
+        command: buildAndPush
+
+        repository: $(imageRepository)
+
+        dockerfile: $(dockerfilePath)
+
+        containerRegistry: $(dockerRegistryServiceConnection)
+
+        tags: |
+
+          latest,$(tag)
+
+    - task: PublishPipelineArtifact@1
+
+      inputs:
+
+        targetPath: '$(Build.ArtifactStagingDirectory)' 
+
+        artifactName: 'todayartifactkube'
