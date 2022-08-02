@@ -11,18 +11,20 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace IotApplication.Controllers{
 [ApiController]
 [Route("[controller]")]
 public class FileController : ControllerBase
 {
-    private readonly string _connectionString;
+    public string _connectionString;
+    private readonly IOptions<ProjectConfig> _config;
 
-    public FileController(IConfiguration _configuration)
+    public FileController(IOptions<ProjectConfig> _configuration)
     {
-        _connectionString = _configuration.GetValue<string>("ConnectionStrings:StorageConnectionString");
-
+        _config = _configuration;
+        _connectionString = _config.Value.StorageConnectionString;
     }
 
     //The following method creates a file share if it doesn't already exist. 

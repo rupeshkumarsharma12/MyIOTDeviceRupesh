@@ -14,20 +14,20 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 
 [ApiController]
 [Route("[controller]")]
 public class QueueStorageController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
     public string connectionString;
+    private readonly IOptions<ProjectConfig> _config;
 
-     public QueueStorageController(IConfiguration configuration)
+     public QueueStorageController(IOptions<ProjectConfig> _configuration)
     {
-        _configuration = configuration;
-        // Get the connection string from app settings
-         this.connectionString = _configuration.GetValue<string>("ConnectionStrings:StorageConnectionString"); 
+        _config = _configuration;
+        connectionString = _config.Value.StorageConnectionString;
 
     }
     
