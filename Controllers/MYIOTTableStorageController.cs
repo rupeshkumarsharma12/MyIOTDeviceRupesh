@@ -57,14 +57,14 @@ public class MYIOTTableStorageController : ControllerBase
 The easiest way to create a new item in a table is to create a class that implements the ITableEntity interface. 
 You can then add your own properties to the class to populate columns of data in that table row.*/
 
-    [HttpPost("AddItem")]
+    [HttpPut("AddItem")]
     public async Task<IActionResult> AddItemAsync(string tableName)
     {
 
 
         // New instance of TableClient class referencing the server-side table
         TableClient tableClient = tableServiceClient.GetTableClient(tableName: tableName);
-        Azure.Response response;
+        //Azure.Response response;
         try
         {
             var prod3 = new Product()
@@ -83,7 +83,7 @@ You can then add your own properties to the class to populate columns of data in
             throw new Exception($"Unable to create Item due to : {0}", ex);
         }
 
-        return Ok(" Created successfully");
+        return Ok(" Updated successfully");
     }
     /*Get an item
    You can retrieve a specific item from a table using the TableEntity.GetEntityAsync<T> method.

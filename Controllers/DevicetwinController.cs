@@ -13,26 +13,41 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.Extensions.Options;
-
+using MyIOTDevice.Models;
 
 [ApiController]
 [Route("[controller]")]
 public class DevicetwinController : ControllerBase
 {
+ static DeviceClient client= null;
+
+ static string deviceconnectionstring="HostName=NxTIoTTraining.azure-devices.net;DeviceId=rupudevice123;SharedAccessKey=VkBpmG5Fk1RhyZH4mpXCQ2xPycgINAkCMTuDZKEjYok=";
+
     private static RegistryManager registryManager;
     private static DeviceClient Client = null;
     private readonly ILogger<DevicetwinController> _logger;
-    private readonly IOptions<ProjectConfig> Configuration;
+    private IConfiguration Configuration;
 
-    public DevicetwinController(IOptions<ProjectConfig> _configuration, ILogger<DevicetwinController> logger)
+    // public DevicetwinController(IConfiguration _configuration, ILogger<DevicetwinController> logger)
+    // {
+    //     Configuration = _configuration;
+    //     _logger = logger;
+    //     registryManager = RegistryManager.CreateFromConnectionString(this.Configuration.Value.NxTIoTHubSAP);//shared access policies connection string.
+    //     //Client = DeviceClient.CreateFromConnectionString(this.Configuration.Value.DeviceConnectionString);
+    //     Client = DeviceClient.CreateFromConnectionString(this.Configuration.GetConnectionString("DeviceConnectionString"), Microsoft.Azure.Devices.Client.TransportType.Mqtt);
+    // }
+
+ public DevicetwinController(IConfiguration _configuration, ILogger<DevicetwinController> logger)
+
     {
+
         Configuration = _configuration;
         _logger = logger;
-        registryManager = RegistryManager.CreateFromConnectionString(this.Configuration.Value.NxTIoTHubSAP);//shared access policies connection string.
-        Client = DeviceClient.CreateFromConnectionString(this.Configuration.Value.DeviceConnectionString);
+        registryManager = RegistryManager.CreateFromConnectionString(this.Configuration.GetConnectionString("NxTIoTHubSAP"));//shared access policies connection string.
+        Client = DeviceClient.CreateFromConnectionString(this.Configuration.GetConnectionString("DeviceConnectionString"), Microsoft.Azure.Devices.Client.TransportType.Mqtt);
 
     }
-
+    
     [HttpPut]
     [Route("AddTags")]
     //the service app : adds location metadata to the device twin associated with DeviceId.
@@ -69,38 +84,60 @@ public class DevicetwinController : ControllerBase
 
     }
 
-    // the device app :that connects to your hub as (IoT device), and then updates its reported properties that is connected using a cellular network.
-    [HttpPut]
-    [Route("Properties/Reported")]
-    public async Task<IActionResult> UpdateReportedProperties(string deviceId)
-    {
-        if (string.IsNullOrEmpty(deviceId))
-        {
-            throw new ArgumentException($"'{nameof(deviceId)}' cannot be null or empty.", nameof(deviceId));
-        }
-        try
-        {
-            await Client.GetTwinAsync();
-            //Console.WriteLine("Sending connectivity data as reported property");
-            TwinCollection reportedProperties, connectivity;
-            reportedProperties = new TwinCollection();
-            connectivity = new TwinCollection();            
-            connectivity["type"] = "cellular";
-            reportedProperties["connectivity"] = connectivity;
-            reportedProperties["temperature"] = "30";
-            reportedProperties["pressure"] = "string";
-            reportedProperties["accuracy"] = "High";
-            reportedProperties["frequency"] = "23 HZ";
-            reportedProperties["sensorType"] = "Touch";
-            await Client.UpdateReportedPropertiesAsync(reportedProperties);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("couldn't Update Reported Property for Device : " + deviceId + " due to : " + ex);
-        }
+[HttpPut]
+[Route("UpdatedReported")]
+public async Task UpdateReportedProperties(string devicename,ReportedProperties properties)
+         {
+            client= DeviceClient.CreateFromConnectionString(deviceconnectionstring,Microsoft.Azure.Devices.Client.TransportType.Mqtt);
+            TwinCollection reportedproperties, connectivity;
+            reportedproperties=new TwinCollection();
+            connectivity=new TwinCollection();
+            connectivity["type"]="cellular";
+            reportedproperties["connectivity"]=connectivity;
+            reportedproperties["temperature"]=properties.temperature;
+            reportedproperties["pressure"]=properties.pressure;
+            reportedproperties["drift"]=properties.drift;
+            reportedproperties["accuracy"]=properties.accuracy;
+            reportedproperties["supplyvoltagelevel"]=properties.supplyvoltagelevel;
+            reportedproperties["fullscale"]=properties.fullscale;
+            reportedproperties["frequency"]=properties.frequency;
+            reportedproperties["sensortype"]=properties.sensortype;
+            reportedproperties["DateTimeLastAppLaunch"]=properties.DateTimeLastAppLaunch;
 
-        return Ok("the device app : " + deviceId + " Reported Property updated successfully");
-    }
+            await client.UpdateReportedPropertiesAsync(reportedproperties);
+         }
+    // the device app :that connects to your hub as (IoT device), and then updates its reported properties that is connected using a cellular network.
+    // [HttpPut]
+    // [Route("Properties/Reported")]
+    // public async Task<IActionResult> UpdateReportedProperties(string deviceId)
+    // {
+    //     if (string.IsNullOrEmpty(deviceId))
+    //     {
+    //         throw new ArgumentException($"'{nameof(deviceId)}' cannot be null or empty.", nameof(deviceId));
+    //     }
+    //     try
+    //     {
+    //         await Client.GetTwinAsync();
+    //         //Console.WriteLine("Sending connectivity data as reported property");
+    //         TwinCollection reportedProperties, connectivity;
+    //         reportedProperties = new TwinCollection();
+    //         connectivity = new TwinCollection();            
+    //         connectivity["type"] = "cellular";
+    //         reportedProperties["connectivity"] = connectivity;
+    //         reportedProperties["temperature"] = "30";
+    //         // reportedProperties["pressure"] = "string";
+    //         // reportedProperties["accuracy"] = "High";
+    //         // reportedProperties["frequency"] = "23 HZ";
+    //         // reportedProperties["sensorType"] = "Touch";
+    //         await Client.UpdateReportedPropertiesAsync(reportedProperties);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         throw new Exception("couldn't Update Reported Property for Device : " + deviceId + " due to : " + ex);
+    //     }
+
+    //     return Ok("the device app : " + deviceId + " Reported Property updated successfully");
+    // }
 
 
     [HttpPut]
@@ -153,6 +190,7 @@ public class DevicetwinController : ControllerBase
             string messageString = JsonConvert.SerializeObject(telemetryDataPoint);
             var message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
             await Client.SendEventAsync(message);
+            Console.WriteLine(messageString);
             return Ok("Device App Id: " + deviceId + " Telemetry message sent successfully!!!");
 
         }

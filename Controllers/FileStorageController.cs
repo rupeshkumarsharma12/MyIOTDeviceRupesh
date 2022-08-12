@@ -102,40 +102,113 @@ public class FileController : ControllerBase
         return Ok("file uploadted successfully");
     }
 
-    [HttpPost("DownloadFile")]
+
+    [HttpGet("DownloadFile")]
+
     public async Task<IActionResult> GetFile(string fileShareName, string directoryName, string fileName)
+
     {
+
+        ShareFileDownloadInfo download=null;
+
+        ShareFileClient file=null;
+
         try
+
         {
+
+
 
             //get fileShare and storage connection
+
             ShareClient share = new(_connectionString, fileShareName);
+
             // Ensure that the share exists
+
             if (await share.ExistsAsync())
+
             {
+
                 // Get a reference to the directory
+
                 ShareDirectoryClient directory = share.GetDirectoryClient(directoryName);
+
                 // Ensure that the directory exists.
+
                 if (await directory.ExistsAsync())
+
                 {
+
                     // Get a reference to a file object
-                    ShareFileClient file = directory.GetFileClient(fileName);
+
+                    file = directory.GetFileClient(fileName);
+
                     // Ensure that the file exists
+
                     if (await file.ExistsAsync())
+
                     {
+
                         // Download the file
-                        ShareFileDownloadInfo download = await file.DownloadAsync();
+
+                        download = await file.DownloadAsync();
+
                     }
+
                 }
+
             }
 
+
+
         }
+
         catch (Exception ex)
+
         {
+
             throw new Exception("Unable to download file due to : ", ex);
+
         }
-        return Ok("file Downloaded successfully");
+
+        return File(download.Content,System.Net.Mime.MediaTypeNames.Application.Octet,fileName);
+
     }
+
+    // [HttpGet("DownloadFile")]
+    // public async Task<IActionResult> GetFile(string fileShareName, string directoryName, string fileName)
+    // {
+    //     try
+    //     {
+
+    //         //get fileShare and storage connection
+    //         ShareClient share = new(_connectionString, fileShareName);
+    //         // Ensure that the share exists
+    //         if (await share.ExistsAsync())
+    //         {
+    //             // Get a reference to the directory
+    //             ShareDirectoryClient directory = share.GetDirectoryClient(directoryName);
+    //             // Ensure that the directory exists.
+    //             if (await directory.ExistsAsync())
+    //             {
+    //                 // Get a reference to a file object
+    //                 ShareFileClient file = directory.GetFileClient(fileName);
+    //                 // Ensure that the file exists
+    //                 if (await file.ExistsAsync())
+    //                 {
+    //                     // Download the file
+    //                     ShareFileDownloadInfo download = await file.DownloadAsync();
+    //                 }
+    //             }
+    //         }
+
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         throw new Exception("Unable to download file due to : ", ex);
+    //     }
+    //     return Ok("file Downloaded successfully");
+    // }
 
     [HttpDelete("DeleteFile")]
     public async Task<IActionResult> DeleteFile(string fileShareName, string directoryName, string fileName)

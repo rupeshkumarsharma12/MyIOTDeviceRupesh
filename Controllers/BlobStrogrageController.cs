@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using Microsoft.Extensions.Options;
 
+
 [ApiController]
 [Route("[controller]")]
 public class BlobStorageController : ControllerBase
@@ -86,6 +87,50 @@ public class BlobStorageController : ControllerBase
         var content = await _storage.GetDocument(_connectionString, containerName, fileName);
         return File(content, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
     }
+
+// public async Task<Stream> GetDocument(string connectionString, string containerName, string fileName)
+
+//         {
+
+//             var container = BlobExtensions.GetContainer(connectionString, containerName);
+
+//             if (await container.ExistsAsync())
+
+//             {
+
+//                 var blobClient = container.GetBlobClient(fileName);
+
+//                 if (blobClient.Exists())
+
+//                 {
+
+//                     var content = await blobClient.DownloadStreamingAsync();
+
+//                     return content.Value.Content;
+
+//                 }
+
+//                 else
+
+//                 {
+
+//                     throw new FileNotFoundException();
+
+//                 }
+
+//             }
+
+//             else
+
+//             {
+
+//                 throw new FileNotFoundException();
+
+//             }
+
+
+
+//         }
 
     [HttpDelete("DeleteContainer")]
     public async Task<IActionResult> DeleteContainer(string containerName)
